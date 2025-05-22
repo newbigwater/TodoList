@@ -1,0 +1,105 @@
+/* AddTodoForm 스타일 */
+.add-todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-input, .form-textarea {
+  padding: 0.625rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.2s;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: #5138ee;
+  box-shadow: 0 0 0 2px rgba(81, 56, 238, 0.25);
+}
+
+.priority-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.priority-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: #f8f9fa;
+  color: #495057;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.priority-btn:hover {
+  background-color: #e9ecef;
+}
+
+.priority-btn.active {
+  font-weight: 500;
+}
+
+.priority-btn.priority-high.active {
+  background-color: #ffebee;
+  border-color: #f44336;
+  color: #d32f2f;
+}
+
+.priority-btn.priority-medium.active {
+  background-color: #fff8e1;
+  border-color: #ffc107;
+  color: #ff8f00;
+}
+
+.priority-btn.priority-low.active {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-btn {
+  padding: 0.625rem 1.25rem;
+  background-color: #5138ee;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #4127d7;
+}
+
+.submit-btn.disabled {
+  background-color: #b2b2b2;
+  cursor: not-allowed;
+} 

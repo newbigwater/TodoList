@@ -1,0 +1,272 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 기본 스타일 설정 */
+:root {
+  --primary-color: #0d6efd;
+  --primary-light: rgba(81, 56, 238, 0.1);
+  --primary-dark: #412bbb;
+  --todo-color: #f3a4b5;
+  --todo-color-light: rgba(243, 164, 181, 0.2);
+  --inprogress-color: #3498db;
+  --inprogress-color-light: rgba(52, 152, 219, 0.1);
+  --completed-color: #27ae60;
+  --completed-color-light: rgba(39, 174, 96, 0.1);
+  --high-priority: #e74c3c;
+  --medium-priority: #f39c12;
+  --low-priority: #3498db;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-muted: #999;
+  --bg-light: #f8f9fa;
+  --bg-white: #fff;
+  --border-color: #e9ecef;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --transition-speed: 0.2s;
+  --secondary-color: #6c757d;
+  --success-color: #198754;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #0dcaf0;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+input, textarea {
+  font-family: inherit;
+}
+
+/* 스크롤바 스타일링 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* 글로벌 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* 반응형 유틸리티 */
+.responsive-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* 접근성 포커스 스타일 */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* 추가 커스텀 스타일 */
+body {
+  @apply bg-gray-50 min-h-screen;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.todo-container {
+  @apply max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md;
+}
+
+.todo-header {
+  @apply text-3xl font-bold text-center mb-8 text-indigo-600;
+}
+
+.todo-form {
+  @apply flex flex-col sm:flex-row gap-2 mb-6;
+}
+
+.todo-input {
+  @apply flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500;
+}
+
+.todo-button {
+  @apply px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+}
+
+.todo-list {
+  @apply space-y-3;
+}
+
+.todo-item {
+  @apply flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow;
+}
+
+.todo-item-completed {
+  @apply bg-gray-50;
+}
+
+.todo-item-title {
+  @apply flex-1 ml-2 text-gray-800 font-medium;
+}
+
+.todo-item-completed .todo-item-title {
+  @apply line-through text-gray-500;
+}
+
+.todo-item-actions {
+  @apply flex items-center space-x-2;
+}
+
+.todo-priority-high {
+  @apply text-red-500 border-l-4 border-red-500 pl-3;
+}
+
+.todo-priority-medium {
+  @apply text-yellow-500 border-l-4 border-yellow-500 pl-3;
+}
+
+.todo-priority-low {
+  @apply text-green-500 border-l-4 border-green-500 pl-3;
+}
+
+.priority-selector {
+  @apply flex items-center space-x-2 mb-4;
+}
+
+.priority-option {
+  @apply px-3 py-1 border rounded-md cursor-pointer;
+}
+
+.priority-option-selected {
+  @apply bg-indigo-100 border-indigo-500;
+}
+
+.notification {
+  @apply fixed top-4 right-4 p-4 rounded-md shadow-lg text-white max-w-sm;
+}
+
+.notification-success {
+  @apply bg-green-600;
+}
+
+.notification-error {
+  @apply bg-red-600;
+}
+
+.notification-info {
+  @apply bg-blue-600;
+}
+
+/* 드래그앤드롭 관련 전역 스타일 */
+body.dragging-active {
+  cursor: grabbing !important;
+}
+
+body.dragging-active * {
+  cursor: grabbing !important;
+}
+
+[draggable="true"] {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-drag: element;
+  touch-action: none;
+}
+
+/* 드래그 중 피드백 강화 */
+.dragging {
+  opacity: 0.7 !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+  position: relative;
+  z-index: 999 !important;
+}
+
+/* 드롭 영역 피드백 */
+.dragging-over {
+  background-color: rgba(13, 110, 253, 0.1) !important;
+  border: 2px dashed #0d6efd !important;
+  box-shadow: 0 0 15px rgba(13, 110, 253, 0.3) !important;
+}
+
+/* 드롭 가능 영역 표시 애니메이션 */
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+}
+
+.dragging-over {
+  animation: pulse-border 1.5s infinite;
+}
+
+/* 드래그 핸들 강조 */
+.drag-handle {
+  position: relative;
+  z-index: 2;
+} 

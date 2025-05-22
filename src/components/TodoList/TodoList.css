@@ -1,0 +1,506 @@
+/* TodoList 컴포넌트 스타일 */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.app-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: normal;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+}
+
+.filter-icon {
+  margin-right: 12px;
+  color: #555;
+}
+
+.add-todo-title {
+  display: flex;
+  align-items: center;
+}
+
+.icon-plus {
+  width: 24px;
+  height: 24px;
+  background-color: #0d6efd;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-weight: bold;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-dropdown label {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.filter-select {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  min-width: 150px;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.clear-search-btn:hover {
+  color: #495057;
+}
+
+.todo-list-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #0d6efd;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 칸반 보드 스타일 */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* 모바일에서는 세로로 배치 */
+@media (max-width: 768px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-title {
+    font-size: 2rem;
+  }
+  
+  .app-subtitle {
+    font-size: 1rem;
+  }
+  
+  .card-header, .card-body {
+    padding: 16px;
+  }
+}
+
+.kanban-board.is-dragging {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.kanban-column {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.kanban-column.dragging-over {
+  background-color: rgba(13, 110, 253, 0.1);
+  box-shadow: 0 0 0 2px #0d6efd;
+  transform: scale(1.02);
+  z-index: 1;
+}
+
+.kanban-column::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  border-radius: 8px;
+  z-index: -1;
+  pointer-events: none;
+  transition: background-color 0.3s;
+}
+
+.kanban-column.dragging-over::before {
+  background-color: rgba(13, 110, 253, 0.1);
+  box-shadow: inset 0 0 0 2px #0d6efd;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.column-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #495057;
+  flex: 1;
+}
+
+.column-count {
+  background-color: #e9ecef;
+  color: #495057;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.column-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.column-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.column-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.column-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.empty-column {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+}
+
+.empty-column p {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+/* 시각적 표시를 위한 칸반 컬럼 색상 */
+.kanban-column:nth-child(1) {
+  border-top: 4px solid #f3a4b5;
+}
+
+.kanban-column:nth-child(1) .column-header {
+  border-bottom-color: rgba(243, 164, 181, 0.2);
+}
+
+.kanban-column:nth-child(1) .column-count {
+  background-color: rgba(243, 164, 181, 0.2);
+  color: #e74c3c;
+}
+
+.kanban-column:nth-child(2) {
+  border-top: 4px solid #5138ee;
+}
+
+.kanban-column:nth-child(2) .column-header {
+  border-bottom-color: rgba(81, 56, 238, 0.2);
+}
+
+.kanban-column:nth-child(2) .column-count {
+  background-color: rgba(81, 56, 238, 0.2);
+  color: #5138ee;
+}
+
+.kanban-column:nth-child(3) {
+  border-top: 4px solid #6f42c1;
+}
+
+.kanban-column:nth-child(3) .column-header {
+  border-bottom-color: rgba(111, 66, 193, 0.2);
+}
+
+.kanban-column:nth-child(3) .column-count {
+  background-color: rgba(111, 66, 193, 0.2);
+  color: #6f42c1;
+}
+
+/* 드래그 중인 아이템 스타일 */
+.todo-item-wrapper {
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.todo-item-wrapper.dragging {
+  opacity: 0.7;
+  transform: scale(1.02);
+}
+
+.is-dragging .kanban-column:not(.dragging-over) {
+  opacity: 0.7;
+}
+
+.is-dragging .kanban-column.dragging-over {
+  opacity: 1;
+}
+
+/* 드래그 핸들 명확히 표시 */
+.drag-handle {
+  cursor: grab;
+  margin-right: 8px;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.drag-handle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+  transform: scale(1.1);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* 드롭 영역 강조 */
+.drop-indicator {
+  height: 2px;
+  margin: 8px 0;
+  background-color: #5138ee;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.dragging-over .drop-indicator {
+  opacity: 1;
+}
+
+/* 에러 컨테이너 */
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.error-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-title {
+  color: #dc3545;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  margin-bottom: 1.5rem;
+}
+
+.retry-button {
+  background-color: #5138ee;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.retry-button:hover {
+  background-color: #412bbb;
+}
+
+/* 스윔레인 (우선순위 기반) */
+.swimlane {
+  margin-bottom: 20px;
+}
+
+.swimlane-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6c757d;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.swimlane-high .swimlane-title {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.swimlane-medium .swimlane-title {
+  color: #fd7e14;
+  background-color: rgba(253, 126, 20, 0.1);
+}
+
+.swimlane-low .swimlane-title {
+  color: #198754;
+  background-color: rgba(25, 135, 84, 0.1);
+}
+
+/* 드래그가 가능한 항목 시각화 */
+.todo-item {
+  cursor: grab;
+}
+
+.todo-item:active {
+  cursor: grabbing;
+}
+
+/* 드롭 영역에 대한 시각적 피드백 추가 */
+.dropzone {
+  border: 2px dashed transparent;
+  transition: all 0.3s ease;
+  min-height: 80px;
+  margin: 8px 0;
+  border-radius: 8px;
+}
+
+.dropzone.active {
+  border-color: #0d6efd;
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* 드래그 앤 드롭 시각적 피드백 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+}
+
+.kanban-column.dragging-over {
+  animation: pulse 1.5s infinite;
+} 
