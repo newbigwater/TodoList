@@ -31,46 +31,21 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const itemRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
 
-  // 이벤트 로깅 함수
-  const logEvent = (eventName: string, additionalInfo?: any) => {
-    console.log(`[TodoItem-${todo.id}] ${eventName}`, additionalInfo || '');
-    // 직접 DOM에 로그 추가 (디버깅용)
-    const logDiv = document.getElementById('debug-log');
-    if (logDiv) {
-      const logItem = document.createElement('div');
-      logItem.textContent = `[TodoItem-${todo.id}] ${eventName} - ${new Date().toISOString()}`;
-      logItem.className = 'log-item';
-      logDiv.prepend(logItem);
-      // 최대 50개 로그만 유지
-      if (logDiv.children.length > 50) {
-        logDiv.removeChild(logDiv.lastChild as Node);
-      }
-    }
-  };
-
-  useEffect(() => {
-    logEvent('컴포넌트 마운트됨');
-    return () => logEvent('컴포넌트 언마운트됨');
-  }, []);
-
   // Native 드래그 앤 드롭 설정
   useEffect(() => {
     const itemElement = itemRef.current;
     const handleElement = dragHandleRef.current;
     
     if (!itemElement || !handleElement) {
-      logEvent('DOM 요소를 찾을 수 없음', { itemElement: !!itemElement, handleElement: !!handleElement });
       return;
     }
     
     // 드래그 가능하도록 설정
     itemElement.setAttribute('draggable', 'true');
-    logEvent('드래그 가능하도록 설정됨');
     
     // 드래그 시작 이벤트 핸들러
     const handleDragStart = (e: Event) => {
       const dragEvent = e as DragEvent;
-      logEvent('드래그 시작', { x: dragEvent.clientX, y: dragEvent.clientY });
       
       if (dragEvent.dataTransfer) {
         // 드래그 데이터 설정
@@ -109,49 +84,33 @@ const TodoItem: React.FC<TodoItemProps> = ({
             }, 0);
           }
         } catch (err) {
-          logEvent('드래그 이미지 설정 오류', err);
+          // 드래그 이미지 설정 중 오류 발생
         }
-      } else {
-        logEvent('dataTransfer 객체가 없음');
       }
     };
     
     // 드래그 중 이벤트 핸들러
     const handleDrag = (e: Event) => {
-      const dragEvent = e as DragEvent;
-      // 성능 이슈를 방지하기 위해 로깅 제한
-      if (dragEvent.clientX % 50 === 0 && dragEvent.clientY % 50 === 0) {
-        logEvent('드래그 중', { x: dragEvent.clientX, y: dragEvent.clientY });
-      }
+      // 드래그 중 처리
     };
     
     // 드래그 종료 이벤트 핸들러
     const handleDragEnd = (e: Event) => {
-      const dragEvent = e as DragEvent;
-      logEvent('드래그 종료', { x: dragEvent.clientX, y: dragEvent.clientY });
-      
       // 드래그 클래스 및 상태 정리
       itemElement.classList.remove('dragging');
       setIsDragging(false);
       document.body.classList.remove('dragging-active');
-      
-      // dropEffect 확인
-      if (dragEvent.dataTransfer) {
-        logEvent('드롭 효과', dragEvent.dataTransfer.dropEffect);
-      }
     };
     
     // 마우스 다운 이벤트 핸들러 (드래그 핸들에만 적용)
     const handleMouseDown = (e: Event) => {
       const mouseEvent = e as MouseEvent;
-      logEvent('마우스 다운', { target: mouseEvent.target, x: mouseEvent.clientX, y: mouseEvent.clientY });
       
       // 마우스 포인터 변경 (grabbing)
       handleElement.style.cursor = 'grabbing';
       
       // 마우스 업 이벤트 리스너 (임시)
       const handleMouseUp = () => {
-        logEvent('마우스 업');
         handleElement.style.cursor = 'grab';
         document.removeEventListener('mouseup', handleMouseUp);
       };
@@ -165,44 +124,36 @@ const TodoItem: React.FC<TodoItemProps> = ({
     itemElement.addEventListener('dragend', handleDragEnd);
     handleElement.addEventListener('mousedown', handleMouseDown);
     
-    logEvent('이벤트 리스너 등록됨');
-    
     // 정리 함수
     return () => {
       itemElement.removeEventListener('dragstart', handleDragStart);
       itemElement.removeEventListener('drag', handleDrag);
       itemElement.removeEventListener('dragend', handleDragEnd);
       handleElement.removeEventListener('mousedown', handleMouseDown);
-      logEvent('이벤트 리스너 제거됨');
     };
   }, [todo.id]);
 
   const handleClick = (e: React.MouseEvent) => {
-    logEvent('클릭됨');
+    // 클릭 처리
   };
 
   const handleDragHandleClick = (e: React.MouseEvent) => {
-    logEvent('드래그 핸들 클릭됨');
     e.stopPropagation(); // 버블링 방지
   };
 
   const handleToggleComplete = () => {
-    logEvent('완료 상태 토글');
     onToggleComplete(todo.id, !todo.completed);
   };
 
   const handleToggleInProgress = () => {
-    logEvent('진행 중 상태 토글');
     onToggleInProgress(todo.id, !todo.inProgress);
   };
 
   const handleDelete = () => {
-    logEvent('삭제 요청됨');
     onDelete(todo.id);
   };
 
   const handleEditClick = () => {
-    logEvent('편집 시작됨');
     setEditedTitle(todo.title);
     setEditedDescription(todo.description || '');
     setEditedPriority(todo.priority);
@@ -211,7 +162,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   const handleEditSave = () => {
     if (editedTitle.trim() === '') return;
-    logEvent('편집 저장됨', { title: editedTitle, description: editedDescription, priority: editedPriority });
     onEdit(todo.id, editedTitle.trim(), editedDescription.trim(), editedPriority);
     setIsEditing(false);
   };

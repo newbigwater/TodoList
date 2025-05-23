@@ -503,4 +503,88 @@
 
 .kanban-column.dragging-over {
   animation: pulse 1.5s infinite;
+}
+
+/* 드래그 앤 드롭 관련 스타일 */
+.dragging {
+  opacity: 0.6;
+  cursor: grabbing !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+.dragging-active .kanban-column {
+  border: 2px dashed transparent;
+  transition: border 0.2s ease;
+}
+
+.dragging-over {
+  border: 2px dashed #4a90e2 !important;
+  background-color: rgba(74, 144, 226, 0.05);
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out forwards;
+  max-width: 300px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification.success {
+  background-color: #4caf50;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+
+.notification.info {
+  background-color: #2196f3;
+}
+
+.notification.warning {
+  background-color: #ff9800;
+}
+
+/* 칸반 보드 스타일 개선 */
+.kanban-column {
+  transition: background-color 0.2s ease, border 0.2s ease;
+  min-height: 300px;
+}
+
+.column-content {
+  min-height: 200px;
+  transition: background-color 0.2s ease;
+}
+
+/* 빈 칸반 컬럼 스타일 개선 */
+.empty-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: #999;
+  font-style: italic;
+  border: 2px dashed #eee;
+  border-radius: 4px;
+  margin: 10px 0;
 } 

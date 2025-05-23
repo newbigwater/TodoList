@@ -60,6 +60,7 @@ export const useTodos = ({ userId }) => {
         title,
         description,
         completed: false,
+        inProgress: false,
         priority,
         createdAt: timestamp,
         updatedAt: timestamp
@@ -106,9 +107,22 @@ export const useTodos = ({ userId }) => {
         throw new Error('존재하지 않는 할 일입니다.');
       }
       
+      // 상태 변경 로직 처리
+      let updatedFields = { ...updates };
+      
+      // completed가 true로 변경되면 inProgress는 false로 설정
+      if (updates.completed === true) {
+        updatedFields.inProgress = false;
+      }
+      
+      // inProgress가 true로 변경되면 completed는 false로 설정
+      if (updates.inProgress === true) {
+        updatedFields.completed = false;
+      }
+      
       const updatedTodo = {
         ...todoToUpdate,
-        ...updates,
+        ...updatedFields,
         updatedAt: Date.now()
       };
       
@@ -151,9 +165,30 @@ export const useTodos = ({ userId }) => {
   const toggleComplete = async (todoId, completed) => {
     try {
       setError(null);
-      await updateTodo(todoId, { completed });
+      // 완료 상태로 변경 시 진행 중 상태는 false로 설정
+      if (completed) {
+        await updateTodo(todoId, { completed, inProgress: false });
+      } else {
+        await updateTodo(todoId, { completed });
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('할 일 완료 상태 변경 중 오류가 발생했습니다.'));
+      throw err;
+    }
+  };
+
+  // 진행 중 상태 토글
+  const toggleInProgress = async (todoId, inProgress) => {
+    try {
+      setError(null);
+      // 진행 중 상태로 변경 시 완료 상태는 false로 설정
+      if (inProgress) {
+        await updateTodo(todoId, { inProgress, completed: false });
+      } else {
+        await updateTodo(todoId, { inProgress });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('할 일 진행 상태 변경 중 오류가 발생했습니다.'));
       throw err;
     }
   };
@@ -177,6 +212,7 @@ export const useTodos = ({ userId }) => {
     updateTodo,
     deleteTodo,
     toggleComplete,
+    toggleInProgress,
     changePriority
   };
 }; 

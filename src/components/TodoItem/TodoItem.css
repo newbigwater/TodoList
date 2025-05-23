@@ -99,6 +99,7 @@
   font-weight: 500;
   white-space: nowrap;
   margin-right: 8px;
+  display: inline-block;
 }
 
 .status-todo {
@@ -202,8 +203,10 @@
 }
 
 .todo-actions button:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
+  background-color: transparent !important;
+  color: #ccc !important;
 }
 
 .todo-actions .edit-btn:hover {

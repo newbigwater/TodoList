@@ -7,6 +7,7 @@ import './App.css';
 function App() {
   const { user, loading: authLoading, error: authError, signIn } = useAuth();
   const [authInitialized, setAuthInitialized] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // 초기 익명 로그인 처리
   useEffect(() => {
@@ -34,6 +35,7 @@ function App() {
     updateTodo,
     deleteTodo,
     toggleComplete,
+    toggleInProgress,
     changePriority
   } = useTodos({ userId: user?.uid || '' });
 
@@ -73,10 +75,13 @@ function App() {
       <TodoList
         todos={todos}
         isLoading={todosLoading}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
         onAddTodo={addTodo}
         onUpdateTodo={updateTodo}
         onDeleteTodo={deleteTodo}
         onToggleComplete={toggleComplete}
+        onToggleInProgress={toggleInProgress}
         onChangePriority={changePriority}
       />
     </div>
