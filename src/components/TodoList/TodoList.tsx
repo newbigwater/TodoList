@@ -64,6 +64,29 @@ const TodoList: React.FC<TodoListProps> = ({
   const [currentDraggedId, setCurrentDraggedId] = useState<string | null>(null);
   const columnsRef = useRef<HTMLDivElement>(null);
 
+  // 디버깅 로그 추가 - 컴포넌트 렌더링 시마다 실행
+  console.log('TodoList 렌더링 - 현재 props:', {
+    todosLength: todos?.length || 0,
+    isLoading,
+    searchQuery,
+    todosData: todos
+  });
+
+  // 디버깅 로그 추가
+  useEffect(() => {
+    console.log('TodoList 컴포넌트 todos 상태 변경:', todos);
+    
+    // 각 항목 세부 정보 출력
+    if (todos && todos.length > 0) {
+      console.log('Todo 항목 세부 정보:');
+      todos.forEach((todo, index) => {
+        console.log(`[${index}] ID: ${todo.id}, 제목: ${todo.title}, 완료: ${todo.completed}, 진행 중: ${todo.inProgress}`);
+      });
+    } else {
+      console.log('Todo 항목이 없습니다.');
+    }
+  }, [todos]);
+
   const handleToggleComplete = async (id: string, completed: boolean) => {
     try {
       await onToggleComplete(id, completed);

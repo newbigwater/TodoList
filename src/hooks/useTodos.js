@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { 
+  getTodos, 
+  addTodo as addTodoService, 
+  updateTodo as updateTodoService,
+  deleteTodo as deleteTodoService,
+  toggleTodoComplete as toggleTodoService,
+  toggleTodoInProgress as toggleTodoInProgressService,
+  changeTodoPriority as changePriorityService
+} from '../services/firestoreService';
 
 // Priority 열거형을 JavaScript 객체로 정의
 const Priority = {
@@ -8,78 +16,61 @@ const Priority = {
   Low: 3
 };
 
-// 로컬 스토리지에서 할 일 목록 가져오기
-const getLocalTodos = (userId) => {
-  const localTodos = localStorage.getItem(`todos_${userId}`);
-  return localTodos ? JSON.parse(localTodos) : [];
-};
-
-// 로컬 스토리지에 할 일 목록 저장
-const saveLocalTodos = (userId, todos) => {
-  localStorage.setItem(`todos_${userId}`, JSON.stringify(todos));
-};
-
 export const useTodos = ({ userId }) => {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 초기 할 일 목록 로드
+  // 디버깅용 로그 함수
+  const logDebug = (message, data) => {
+    console.log(`[useTodos] ${message}`, data || '');
+  };
+
+  // Firestore에서 실시간으로 할 일 목록 구독
   useEffect(() => {
+    logDebug('useEffect 실행: userId 변경됨', userId);
+    
     if (!userId) {
+      logDebug('userId가 없음, 빈 배열 설정');
       setTodos([]);
       setLoading(false);
-      return;
+      return () => {};
     }
 
+    logDebug('Firestore 구독 시작');
+    setLoading(true);
+    
     try {
-      setLoading(true);
-      const localTodos = getLocalTodos(userId);
-      setTodos(localTodos);
-      setLoading(false);
+      const unsubscribe = getTodos(userId, (newTodos) => {
+        logDebug(`Firestore 콜백 - ${newTodos.length}개의 할 일 수신됨`, newTodos);
+        setTodos(newTodos);
+        setLoading(false);
+      });
+
+      // 컴포넌트 언마운트 시 구독 해제
+      return () => {
+        logDebug('Firestore 구독 해제');
+        unsubscribe();
+      };
     } catch (err) {
-      setError(new Error('할 일 목록을 불러오는 중 오류가 발생했습니다.'));
+      logDebug('Firestore 구독 중 오류 발생', err);
+      setError(err);
       setLoading(false);
+      return () => {};
     }
   }, [userId]);
 
   // 할 일 추가
   const addTodo = async (title, description = '', priority = Priority.Medium) => {
+    logDebug('할 일 추가 요청', { title, description, priority });
+    
     try {
       setError(null);
-      
-      // 중복 체크
-      const isDuplicate = todos.some(todo => todo.title === title);
-      if (isDuplicate) {
-        throw new Error('동일한 제목의 할 일이 이미 존재합니다.');
-      }
-      
-      const timestamp = Date.now();
-      const newTodo = {
-        id: uuidv4(),
-        title,
-        description,
-        completed: false,
-        inProgress: false,
-        priority,
-        createdAt: timestamp,
-        updatedAt: timestamp
-      };
-      
-      // 새 할 일 추가
-      const updatedTodos = [...todos, newTodo];
-      
-      // 우선순위 및 생성일 기준 정렬
-      updatedTodos.sort((a, b) => {
-        if (a.priority !== b.priority) {
-          return a.priority - b.priority;
-        }
-        return b.createdAt - a.createdAt;
-      });
-      
-      setTodos(updatedTodos);
-      saveLocalTodos(userId, updatedTodos);
+      const newTodo = await addTodoService(userId, title, description, priority);
+      logDebug('할 일 추가 성공', newTodo);
+      return newTodo;
     } catch (err) {
+      logDebug('할 일 추가 실패', err);
       setError(err instanceof Error ? err : new Error('할 일 추가 중 오류가 발생했습니다.'));
       throw err;
     }
@@ -87,61 +78,15 @@ export const useTodos = ({ userId }) => {
 
   // 할 일 업데이트
   const updateTodo = async (todoId, updates) => {
+    logDebug('할 일 업데이트 요청', { todoId, updates });
+    
     try {
       setError(null);
-      
-      // 제목 변경시 중복 체크
-      if (updates.title) {
-        const isDuplicate = todos.some(
-          todo => todo.id !== todoId && todo.title === updates.title
-        );
-        
-        if (isDuplicate) {
-          throw new Error('동일한 제목의 할 일이 이미 존재합니다.');
-        }
-      }
-      
-      // 업데이트할 할 일 찾기
-      const todoToUpdate = todos.find(todo => todo.id === todoId);
-      if (!todoToUpdate) {
-        throw new Error('존재하지 않는 할 일입니다.');
-      }
-      
-      // 상태 변경 로직 처리
-      let updatedFields = { ...updates };
-      
-      // completed가 true로 변경되면 inProgress는 false로 설정
-      if (updates.completed === true) {
-        updatedFields.inProgress = false;
-      }
-      
-      // inProgress가 true로 변경되면 completed는 false로 설정
-      if (updates.inProgress === true) {
-        updatedFields.completed = false;
-      }
-      
-      const updatedTodo = {
-        ...todoToUpdate,
-        ...updatedFields,
-        updatedAt: Date.now()
-      };
-      
-      // 업데이트된 할 일 목록 생성
-      const updatedTodos = todos.map(todo => 
-        todo.id === todoId ? updatedTodo : todo
-      );
-      
-      // 우선순위 및 생성일 기준 정렬
-      updatedTodos.sort((a, b) => {
-        if (a.priority !== b.priority) {
-          return a.priority - b.priority;
-        }
-        return b.createdAt - a.createdAt;
-      });
-      
-      setTodos(updatedTodos);
-      saveLocalTodos(userId, updatedTodos);
+      const result = await updateTodoService(userId, todoId, updates);
+      logDebug('할 일 업데이트 성공', result);
+      return result;
     } catch (err) {
+      logDebug('할 일 업데이트 실패', err);
       setError(err instanceof Error ? err : new Error('할 일 수정 중 오류가 발생했습니다.'));
       throw err;
     }
@@ -149,13 +94,14 @@ export const useTodos = ({ userId }) => {
 
   // 할 일 삭제
   const deleteTodo = async (todoId) => {
+    logDebug('할 일 삭제 요청', { todoId });
+    
     try {
       setError(null);
-      
-      const updatedTodos = todos.filter(todo => todo.id !== todoId);
-      setTodos(updatedTodos);
-      saveLocalTodos(userId, updatedTodos);
+      await deleteTodoService(userId, todoId);
+      logDebug('할 일 삭제 성공', { todoId });
     } catch (err) {
+      logDebug('할 일 삭제 실패', err);
       setError(err instanceof Error ? err : new Error('할 일 삭제 중 오류가 발생했습니다.'));
       throw err;
     }
@@ -163,15 +109,14 @@ export const useTodos = ({ userId }) => {
 
   // 완료 상태 토글
   const toggleComplete = async (todoId, completed) => {
+    logDebug('완료 상태 토글 요청', { todoId, completed });
+    
     try {
       setError(null);
-      // 완료 상태로 변경 시 진행 중 상태는 false로 설정
-      if (completed) {
-        await updateTodo(todoId, { completed, inProgress: false });
-      } else {
-        await updateTodo(todoId, { completed });
-      }
+      await toggleTodoService(userId, todoId, completed);
+      logDebug('완료 상태 토글 성공', { todoId, completed });
     } catch (err) {
+      logDebug('완료 상태 토글 실패', err);
       setError(err instanceof Error ? err : new Error('할 일 완료 상태 변경 중 오류가 발생했습니다.'));
       throw err;
     }
@@ -179,15 +124,14 @@ export const useTodos = ({ userId }) => {
 
   // 진행 중 상태 토글
   const toggleInProgress = async (todoId, inProgress) => {
+    logDebug('진행 중 상태 토글 요청', { todoId, inProgress });
+    
     try {
       setError(null);
-      // 진행 중 상태로 변경 시 완료 상태는 false로 설정
-      if (inProgress) {
-        await updateTodo(todoId, { inProgress, completed: false });
-      } else {
-        await updateTodo(todoId, { inProgress });
-      }
+      await toggleTodoInProgressService(userId, todoId, inProgress);
+      logDebug('진행 중 상태 토글 성공', { todoId, inProgress });
     } catch (err) {
+      logDebug('진행 중 상태 토글 실패', err);
       setError(err instanceof Error ? err : new Error('할 일 진행 상태 변경 중 오류가 발생했습니다.'));
       throw err;
     }
@@ -195,10 +139,14 @@ export const useTodos = ({ userId }) => {
 
   // 우선순위 변경
   const changePriority = async (todoId, priority) => {
+    logDebug('우선순위 변경 요청', { todoId, priority });
+    
     try {
       setError(null);
-      await updateTodo(todoId, { priority });
+      await changePriorityService(userId, todoId, priority);
+      logDebug('우선순위 변경 성공', { todoId, priority });
     } catch (err) {
+      logDebug('우선순위 변경 실패', err);
       setError(err instanceof Error ? err : new Error('우선순위 변경 중 오류가 발생했습니다.'));
       throw err;
     }

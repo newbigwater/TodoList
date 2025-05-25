@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 임시: 개발 중 모든 경로에 대해 접근 허용
+    match /{document=**} {
+      allow read, write: if true;
+    }
+    
+    // 할 일 컬렉션 규칙 (인증 후 적용 예정)
+    // match /todos/{userId}/{document=**} {
+    //   // 인증된 사용자만 자신의 할 일에 접근 가능
+    //   allow read, write: if request.auth != null && request.auth.uid == userId;
+    // }
+    
+    // 사용자 컬렉션 규칙 (인증 후 적용 예정)
+    // match /users/{userId} {
+    //   // 인증된 사용자만 자신의 정보에 접근 가능
+    //   allow read, write: if request.auth != null && request.auth.uid == userId;
+    // }
+  }
+} 
